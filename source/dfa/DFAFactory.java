@@ -2,12 +2,14 @@ package dfa;
 
 // Read DFA definition, test cases from file
 // create the corresponding DFA
-class DFAFactory {
+public class DFAFactory {
+
+  public DFAFactory() {}
 
   public DFA testCreate() { // for test
     FAState initState = new FAState(0);
 
-    DFA dfa = new DFA();
+    DFA dfa = new DFA(null, null, null);
 
     return dfa;
   }

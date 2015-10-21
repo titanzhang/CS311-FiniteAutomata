@@ -1,6 +1,6 @@
 package dfa;
 
-class DFA {
+public class DFA {
   private int inputIndex = -1;
   private String input = null;
 
@@ -12,7 +12,6 @@ class DFA {
   // TODO: Do we need a property for all states?
 
   public DFA(FAState initState, FAStateSet finalStates, FATransitTable transitTable) {
-    this.states = states;
     this.initState = initState;
     this.finalStates = finalStates;
     this.transitTable = transitTable;
