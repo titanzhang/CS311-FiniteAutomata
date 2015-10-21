@@ -1,0 +1,28 @@
+{
+  "FADefinition":
+  {
+    "type": "DFA",
+    "initState": 0,
+    "finalStates": [1],
+    "transitionTable": [
+      {"state": 0, "input": "0", "nextState": 1},
+      {"state": 0, "input": "1", "nextState": 0},
+      {"state": 1, "input": "0", "nextState": 1},
+      {"state": 1, "input": "1", "nextState": 0}
+    ]
+  },
+
+  "testCases":
+  [
+    "",
+    "100",
+    "011",
+    "10abc",
+    "0",
+    "1",
+    "0101011",
+    "11010",
+    "0001",
+    "1110"
+  ]
+}
