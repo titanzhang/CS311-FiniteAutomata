@@ -12,12 +12,7 @@ public class DFA {
   private List<FAState> finalStates = null;
   private FATransitTable transitTable = null;
 
-  public DFA(List<FAAlphabet> alphabetList, List<FAState> stateList, FAState initState, List<FAState> finalStates, FATransitTable transitTable) {
-    this.stateList = stateList;
-    this.alphabetList = alphabetList;
-    this.initState = initState;
-    this.finalStates = finalStates;
-    this.transitTable = transitTable;
+  public DFA() {
   }
 
   public boolean isAccept(String input) {
@@ -42,21 +37,22 @@ public class DFA {
 
   protected FAState getNextState(FAState currentState, char symbol) {
     // Find an alphabet group containing the symbol
-    FAAlphabet alphabet = null;
+    FAAlphabet targetAlphabet = null;
     Iterator<FAAlphabet> iterator = this.alphabetList.iterator();
     while (iterator.hasNext()) {
-      alphabet = iterator.next();
+      FAAlphabet alphabet = iterator.next();
       if (alphabet.contains(symbol)) {
+        targetAlphabet = alphabet;
         break;
       }
     }
 
-    if (alphabet == null) {
+    if (targetAlphabet == null) {
       return null;
     }
 
     // Get the next state from transition table
-    return this.transitTable.getNextState(currentState, alphabet);
+    return this.transitTable.getNextState(currentState, targetAlphabet);
   }
 
   protected boolean isInputComplete() {
@@ -79,16 +75,47 @@ public class DFA {
     this.input = input;
   }
 
+// Set/Get methods begin
+  public DFA setAlphabetList(List<FAAlphabet> alphabetList) {
+    this.alphabetList = alphabetList;
+    return this;
+  }
+
+  public List<FAAlphabet> getAlphabetList() {
+    return this.alphabetList;
+  }
+
+  public DFA setStateList(List<FAState> stateList) {
+    this.stateList = stateList;
+    return this;
+  }
+
+  public DFA setInitState(FAState initState) {
+    this.initState = initState;
+    return this;
+  }
+
+  public DFA setFinalStates(List<FAState> finalStates) {
+    this.finalStates = finalStates;
+    return this;
+  }
+
+  public DFA setTransitTable(FATransitTable transitTable) {
+    this.transitTable = transitTable;
+    return this;
+  }
+// Set/Get methods end
+
   public String getDefinitionString() {
     // Alphabet set
     String alphabetInfo = "AlphabetList = {\n";
     for (int i = 0; i < this.alphabetList.size(); i ++) {
-      alphabetInfo += String.format("\t%d: ", i);
+      alphabetInfo += String.format("\t%d -> ", i);
       char[] alphabet = this.alphabetList.get(i).getAlphabet();
       for (int j = 0; j < alphabet.length; j ++) {
         alphabetInfo += String.format("%s%s", ((j==0)? "": ","), alphabet[j]);
       }
-      alphabetInfo += ";\n";
+      alphabetInfo += "\n";
     }
     alphabetInfo += "}\n";
 
@@ -113,8 +140,24 @@ public class DFA {
     }
     finalStateInfo = finalStateInfo.substring(0, finalStateInfo.length() - 1) + "}\n";
 
-    // TODO: Transition table
+    // Transition table
     String transitTableInfo = "TransitionTable = {\n";
+    Iterator<Map.Entry<FATransitTable.FARuleKey, FAState>> transitTableIt = this.transitTable.getTable().entrySet().iterator();
+    while (transitTableIt.hasNext()) {
+      Map.Entry<FATransitTable.FARuleKey, FAState> tableEntry = transitTableIt.next();
+      FATransitTable.FARuleKey ruleKey = tableEntry.getKey();
+      FAState state = tableEntry.getValue();
+      FAAlphabet input = ruleKey.getInput();
+      transitTableInfo += String.format("\t(%d, ", ruleKey.getState().getState());
+      for (int i = 0; i < this.alphabetList.size(); i ++) {
+        FAAlphabet alphabet = this.alphabetList.get(i);
+        if (input.equals(alphabet)) {
+          transitTableInfo += String.format("%d, ", i);
+          break;
+        }
+      }
+      transitTableInfo += String.format("%d)\n", state.getState());
+    }
     transitTableInfo += "}\n";
 
     return alphabetInfo + stateSetInfo + initStateInfo + finalStateInfo + transitTableInfo;

@@ -1,7 +1,7 @@
 # Status
 * FA implementation -- DONE
-* FA debug info -- PARTIALLY DONE
-* Parse input file -- TODO
+* FA debug info -- DONE
+* Parse input file -- DONE
 
 # Features
 * Support DFA w/ or w/o trap state
@@ -10,6 +10,7 @@
 # How to compile
 * cd [root of project directory]
 * sh compile.sh
+* Note: tested in Java 1.6
 
 # How to run
 * cd classes

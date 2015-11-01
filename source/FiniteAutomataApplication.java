@@ -1,4 +1,5 @@
 import dfa.*;
+import java.util.*;
 
 class FiniteAutomataApplication {
   public static void main(String[] argv) {
@@ -12,13 +13,14 @@ class FiniteAutomataApplication {
     factory.parseData(dataFileName);
 
     DFA automata = factory.getDFA();
-    String[] testCases = factory.getTestCases();
 
     System.out.println("FA Definition:");
     System.out.println(automata.getDefinitionString());
+
     System.out.println("Test Cases:");
-    for (int i = 0; i < testCases.length; i ++) {
-      String input = testCases[i];
+    Iterator<String> testCases = factory.getTestCases().iterator();
+    while (testCases.hasNext()) {
+      String input = testCases.next();
       System.out.printf(" \"%s\" --> %s\n", input, automata.isAccept(input)? "accept": "reject");
     }
 

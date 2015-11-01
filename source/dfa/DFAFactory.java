@@ -1,84 +1,85 @@
 package dfa;
-import java.util.*;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import dfa.parser.AlphabetsParser;
+import dfa.parser.FinalStatesParser;
+import dfa.parser.ISectionParser;
+import dfa.parser.InitStateParser;
+import dfa.parser.StatesParser;
+import dfa.parser.TestCasesParser;
+import dfa.parser.TransitionTableParser;
 
 // Read DFA definition, test cases from file
 // create the corresponding DFA
 public class DFAFactory {
-  private DFA dfa = null;
-  private String[] testCases = null;
+	private DFA dfa = null;
+	private List<String> testCases = null;
 
-  public DFAFactory() {}
+	private static Map<String, ISectionParser> parserList = new HashMap<String, ISectionParser>();
+	static {
+		ISectionParser parser = new AlphabetsParser();
+		DFAFactory.parserList.put(parser.getSectionName(), parser);
+		parser = new StatesParser();
+		DFAFactory.parserList.put(parser.getSectionName(), parser);
+		parser = new FinalStatesParser();
+		DFAFactory.parserList.put(parser.getSectionName(), parser);
+		parser = new InitStateParser();
+		DFAFactory.parserList.put(parser.getSectionName(), parser);
+		parser = new TransitionTableParser();
+		DFAFactory.parserList.put(parser.getSectionName(), parser);
+		parser = new TestCasesParser();
+		DFAFactory.parserList.put(parser.getSectionName(), parser);
+	}
 
-  public DFAFactory parseData(String dataFileName) { // TODO
+	public DFAFactory() {
+		this.dfa = new DFA();
+		this.testCases = new ArrayList<String>();
+	}
 
-    // test M1
-    this.dfa = this.testCreate1();
-    this.testCases = this.testGetTestCases1();
+	public DFAFactory parseData(String dataFileName) {
 
-    return this;
-  }
+		BufferedReader inputStream = null;
+		try {
+			inputStream = new BufferedReader(new FileReader(dataFileName));
+			String line = inputStream.readLine();
+			while (line != null) {
+				line = line.trim();
+				if (line.length() == 0) {
+					line = inputStream.readLine();
+					continue;
+				}
 
-  public DFA getDFA() {
-    return this.dfa;
-  }
+				ISectionParser parser = DFAFactory.parserList.get(line);
+				if (parser != null) {
+					line = parser.parse(inputStream, this.dfa, this);
+				} else {
+					line = inputStream.readLine();
+				}
+			}
 
-  public String[] getTestCases() {
-    return this.testCases;
-  }
+			inputStream.close();
+		} catch (Exception e) {
+		}
 
-  private DFA testCreate1() { // for test M1
-    // Alphabets
-    // input format: {0,1}
-    List<FAAlphabet> alphabetList = new ArrayList<FAAlphabet>();
-    //alphabetList.add(new FAAlphabet(new char[]{'0','2'}));
-    alphabetList.add(new FAAlphabet('0'));
-    alphabetList.add(new FAAlphabet('1'));
+		return this;
+	}
 
-    // States
-    // intput format: {0,1,2}
-    List<FAState> stateList = new ArrayList<FAState>();
-    stateList.add(new FAState(0));
-    stateList.add(new FAState(1));
+	public DFA getDFA() {
+		return this.dfa;
+	}
 
-    // Init state
-    // input format: 0
-    FAState initState = new FAState(0);
+	public List<String> getTestCases() {
+		return this.testCases;
+	}
 
-    // Final states
-    // input format: {stateIndex,...}
-    // For this instance: {1}
-    List<FAState> finalStates = new ArrayList<FAState>();
-    finalStates.add(new FAState(1));
-
-    // Transition table
-    // input format: {(state,alphabetIndex,nextState),...}
-    // For this instance: {(0,0,1),(0,1,2),(1,0,1),(1,1,2),(2,0,1),(2,1,2)}
-    FATransitTable transitTable = new FATransitTable();
-    transitTable.add(new FAState(0), alphabetList.get(0), new FAState(1));
-    transitTable.add(new FAState(0), alphabetList.get(1), new FAState(0));
-    transitTable.add(new FAState(1), alphabetList.get(0), new FAState(1));
-    transitTable.add(new FAState(1), alphabetList.get(1), new FAState(0));
-
-    // Construct the DFA
-    DFA dfa = new DFA(alphabetList, stateList, initState, finalStates, transitTable);
-
-    return dfa;
-  }
-
-  private String[] testGetTestCases1() { // for test M1
-    String[] cases = {
-      "",
-      "100",
-      "011",
-      "10abc",
-      "0",
-      "1",
-      "0101011",
-      "11010",
-      "0001",
-      "1110"
-    };
-
-    return cases;
-  }
+	public DFAFactory addTestCase(String testCase) {
+		this.testCases.add(testCase);
+		return this;
+	}
 }

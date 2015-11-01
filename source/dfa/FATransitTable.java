@@ -12,6 +12,10 @@ public class FATransitTable extends Object {
     return this.table.get(new FARuleKey(state, alphabet));
   }
 
+  public Map<FARuleKey, FAState> getTable() {
+    return this.table;
+  }
+
   public static class FARuleKey {
     FAState state = null;
     FAAlphabet input = null;
@@ -21,7 +25,14 @@ public class FATransitTable extends Object {
       this.input = input;
     }
 
-    @Override
+    public FAState getState() {
+      return this.state;
+    }
+
+    public FAAlphabet getInput() {
+      return this.input;
+    }
+
     public int hashCode() {
       int result = 17;
       result = (this.state == null)? 0: (31 * result + this.state.hashCode());
@@ -29,7 +40,6 @@ public class FATransitTable extends Object {
       return result;
     }
 
-    @Override
     public boolean equals(Object obj) {
       if (obj == null) return false;
       if (obj == this) return true;
