@@ -15,4 +15,3 @@
 # How to run
 * cd classes
 * java FiniteAutomataApplication [FA definition file]
-
